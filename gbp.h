@@ -6,8 +6,8 @@
 /*
  * Implementation of algorithm for the Generalized Birthday
  * Problem with 3 lists, using Wagner algorithm and
- * various optimization including ours.
- * Algorithm implemented here:
+ * various optimizations including ours.
+ * Algorithms to be implemented here:
  *
  * -> Basic Wagner Algorithm (Wagner).
  * -> Nicolic & Sasaki (NS) (+ a Parallel version with more targets).
@@ -45,6 +45,9 @@ typedef struct{
 F2list* F2list_rand_init(size_t n, size_t l); //Get memory and initialize a list with random elements.
 po_F2list* po_F2list_init(size_t nentry, size_t nbits, size_t l); //Initilise a partialy ordered list.
 void po_F2list_free(po_F2list *T);
+F2vector* F2vector_init(size_t n);
+void F2vector_free(F2vector *x);
+void F2list_copy_row(F2list *B, size_t ib, size_t jb, F2list *A, size_t ia, size_t j0, size_t j1);
 
 /*Partial collision*/
 uint32_t F2list_entry_low(F2list *L, size_t i, size_t l); //get low_l(L[i]).
@@ -52,3 +55,4 @@ po_F2list* F2list_partial_ordering(F2list *L, size_t l, size_t start, size_t end
 
 /*Parameters estimation*/
 size_t FindlValue(size_t n, int prec); //find value of l such that |L| = 2^l
+
