@@ -56,26 +56,6 @@ po_F2list* po_F2list_init(size_t nentry, size_t nbits, size_t l){
   return T;
 }
 
-//Vector allocation.
-F2vector* F2vector_init(size_t n){
-  F2vector *x;
-  x = malloc(sizeof(F2vector));
-  x->n = n;
-  x->n_word = (n >> 6) + 1; //ceil(n/64).
-  x->v = malloc(x->n_word*sizeof(word));
-  return x;
-}
-
-//Free vector.
-void F2vector_free(F2vector *x){
-  if(x == NULL){
-    return;
-  }
-  if(x->v != NULL){
-    free(x->v);
-  }
-  free(x);
-}
 
 //copy row ia from matrix A between cols j0 and j1 into row ib matrix B starting at jb.
 void F2list_copy_row(F2list *B, size_t ib, size_t jb, F2list *A, size_t ia, size_t j0, size_t j1){
@@ -105,8 +85,8 @@ void po_F2list_free(po_F2list *T){
 }
 
 /*Fonction qui récupère les l bits de poids faibles de la ligne i de la liste*/
-uint32_t F2list_entry_low(F2list *L, size_t i, size_t l){
-  uint32_t low = 0;
+F2vector F2list_entry_low(F2list *L, size_t i, size_t l){
+  F2vector low = 0;
   size_t j;
 
   assert(l <= (size_t)L->ncols); //check inputs.
@@ -121,12 +101,16 @@ uint32_t F2list_entry_low(F2list *L, size_t i, size_t l){
   return low;
 }
 
+/*
+ * Function that get bits j0 to j1 of row i dans store them in a F2vector.
+ */
+
 /*Fonction qui parcourt L entre start et end et qui pour chacune des 2^l 
  *valeurs possibles de x , compte le nombre d'éléments de L dont les l bits 
  *de poids faibles valent x
  *Le resultat est stoké dans le tableau w*/
 void F2list_count_low(size_t *w, F2list *L, size_t l, size_t start, size_t end){
-  uint32_t low;
+  F2vector low;
   size_t i;
   size_t N;
 
@@ -151,7 +135,7 @@ void F2list_count_low(size_t *w, F2list *L, size_t l, size_t start, size_t end){
  *sorte qu'ils soient ordonnés sur les l-bits de poids faibles.
  *le resultat est stocké dans la po_F2list T.*/
 po_F2list* F2list_partial_ordering(F2list *L, size_t l, size_t start, size_t end){
-  uint32_t low;
+  F2vector low;
   size_t i, N, NL = end - start;
   size_t *ind, *w;
   F2list *TL;
@@ -197,7 +181,7 @@ po_F2list* F2list_partial_ordering(F2list *L, size_t l, size_t start, size_t end
 size_t F2listx2_partial_col_count(F2list *L, po_F2list *T, size_t start, size_t end){
   size_t count = 0, i, l;
   size_t *ind;
-  uint32_t low;
+  F2vector low;
 
   l = T->l;
   ind = T->index;
@@ -228,7 +212,7 @@ F2list * F2list_partial_col_list(F2list *L, po_F2list *T, size_t start, size_t e
   F2list *L12, *TL; // Wagner's Notation.
   size_t count, i, l, n, j;
   size_t *ind;
-  uint32_t low;
+  F2vector low;
 
   //initialize values.
   l = T->l;
@@ -264,7 +248,6 @@ F2list * F2list_partial_col_list(F2list *L, po_F2list *T, size_t start, size_t e
 }
 
 
-
 int main(){
   /*Calcul de la valeur de l théorique pour n in {16, 32, 64} */
   size_t l16, l32, l64;
@@ -279,7 +262,7 @@ int main(){
   F2list *L = F2list_init(16, l16);
 
   //mzd_print(L);
-  uint32_t x;
+  F2vector x;
   x = F2list_entry_low(L, 0, 4);
 
   printf("\n");
