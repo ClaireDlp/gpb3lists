@@ -23,11 +23,7 @@
 //New type definition.
 typedef mzd_t F2list; //<-- list of n-bit elements seen as vectors over F_2
 
-typedef struct{
-  size_t n; //size of the vector.
-  size_t n_word; //number of word (uint64_t) in the vector.
-  word *v; //vector (v_0....v_n).
-} F2vector;
+typedef word F2vector; //<-- F2vector is uint64_t (assuming that n <=64).
 
 typedef struct{
   size_t l; // Partial ordering on l LSB
@@ -50,7 +46,7 @@ void F2vector_free(F2vector *x);
 void F2list_copy_row(F2list *B, size_t ib, size_t jb, F2list *A, size_t ia, size_t j0, size_t j1);
 
 /*Partial collision*/
-uint32_t F2list_entry_low(F2list *L, size_t i, size_t l); //get low_l(L[i]).
+F2vector F2list_entry_low(F2list *L, size_t i, size_t l); //get low_l(L[i]).
 po_F2list* F2list_partial_ordering(F2list *L, size_t l, size_t start, size_t end); //partialy sort list L
 
 /*Parameters estimation*/
